@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: honojs-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:password@db:5432/honojs_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET}
+      - DOKU_CLIENT_ID=${DOKU_CLIENT_ID}
+      - DOKU_SECRET_KEY=${DOKU_SECRET_KEY}
+      - DOKU_ENVIRONMENT=${DOKU_ENVIRONMENT:-sandbox}
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - honojs-network
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: honojs-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=honojs_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - honojs-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: honojs-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - honojs-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # pgAdmin (Optional - Database GUI)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: honojs-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@honojs.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - honojs-network
+    profiles:
+      - admin
+
+  # Redis Commander (Optional - Redis GUI)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: honojs-redis-commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - honojs-network
+    profiles:
+      - admin
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  honojs-network:
+    driver: bridge
