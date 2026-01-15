@@ -1,6 +1,6 @@
 import { MiddlewareHandler } from 'hono';
-import redisService from '../infrastructure/cache/redis.service.js';
 import logger from '../utils/logger.js';
+import { RedisService } from '@/infrastructure/cache/redis.service.js';
 
 export interface RateLimitConfig {
   windowMs: number;
@@ -22,6 +22,7 @@ export function rateLimit(config: RateLimitConfig): MiddlewareHandler {
   } = config;
 
   return async (c, next) => {
+    const redisService = c.get('redisService') as RedisService;
     const key = keyGenerator
       ? keyGenerator(c)
       : `rate_limit:${c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'anonymous'}`;

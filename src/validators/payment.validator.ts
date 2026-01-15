@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentStatus } from '../../prisma/generated/enums';
 
 export const createPaymentSchema = z.object({
   orderId: z.string().cuid('Invalid order ID format'),
