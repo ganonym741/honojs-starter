@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js';
 import { z } from 'zod';
 
 export const createOrderSchema = z.object({
@@ -5,7 +6,7 @@ export const createOrderSchema = z.object({
     z.object({
       productName: z.string().min(1, 'Product name is required'),
       quantity: z.number().int().positive('Quantity must be positive'),
-      price: z.number().positive('Price must be positive'),
+      price: z.number().positive('Price must be positive').transform((val) => Decimal(val)),
     }),
   ),
   notes: z.string().max(500, 'Notes must be less than 500 characters').optional(),

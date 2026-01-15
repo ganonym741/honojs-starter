@@ -21,12 +21,12 @@ async function main() {
   console.log("📋 Phase 2");
   await Promise.all([
     prisma.profile.createMany({ data: ProfileSeeds, skipDuplicates: true }),
-    prisma.order.createMany({ data: OrderSeeds, skipDuplicates: true }),
+    prisma.order.createMany({ data: OrderSeeds as any, skipDuplicates: true }),
   ])
 
   console.log("📋 Phase 3");
   await Promise.all([
-    prisma.orderItem.createMany({ data: OrderItemSeeds, skipDuplicates: true }),
+    prisma.orderItem.createMany({ data: OrderItemSeeds as any, skipDuplicates: true }),
   ])
 
   console.log("✅ Seeding completed successfully!");

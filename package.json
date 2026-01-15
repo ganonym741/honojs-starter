@@ -1,6 +1,8 @@
 {
   "name": "honojs-boilerplate",
   "version": "1.0.0",
+  "author": "Ganonym741",
+  "license": "MIT",
   "type": "module",
   "description": "Production-ready Hono.js boilerplate with authentication, PostgreSQL, Redis, and payment integration",
   "main": "dist/index.js",
@@ -38,8 +40,6 @@
     "docker",
     "docker-compose"
   ],
-  "author": "Ganonym741",
-  "license": "MIT",
   "dependencies": {
     "@hono/node-server": "^1.13.5",
     "@prisma/adapter-pg": "^7.2.0",
