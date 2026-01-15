@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client"
+    output   = "./generated"
+    runtime  = "bun"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+    id            String   @id @default(cuid())
+    email         String   @unique
+    password      String
+    name          String?
+    phone         String?
+    avatar        String?
+    isActive      Boolean  @default(true)
+    emailVerified Boolean  @default(false)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    sessions Session[]
+    profiles Profile[]
+    orders   Order[]
+
+    @@index([email])
+    @@map("users")
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    userId       String
+    token        String   @unique
+    refreshToken String?  @unique
+    expiresAt    DateTime
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([token])
+    @@index([refreshToken])
+    @@map("sessions")
+}
+
+model Profile {
+    id          String    @id @default(cuid())
+    userId      String    @unique
+    bio         String?
+    address     String?
+    city        String?
+    country     String?
+    postalCode  String?
+    dateOfBirth DateTime?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@map("profiles")
+}
+
+model Order {
+    id            String        @id @default(cuid())
+    userId        String
+    orderNumber   String        @unique
+    totalAmount   Decimal       @db.Decimal(10, 2)
+    status        OrderStatus   @default(PENDING)
+    paymentStatus PaymentStatus @default(PENDING)
+    paymentMethod String?
+    paymentId     String?       @unique
+    paymentData   Json?
+    notes         String?
+    createdAt     DateTime      @default(now())
+    updatedAt     DateTime      @updatedAt
+
+    user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    items    OrderItem[]
+    payments Payment[]
+
+    @@index([userId])
+    @@index([orderNumber])
+    @@index([status])
+    @@map("orders")
+}
+
+model OrderItem {
+    id          String  @id @default(cuid())
+    orderId     String
+    productName String
+    quantity    Int
+    price       Decimal @db.Decimal(10, 2)
+    metadata    Json?
+
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    @@index([orderId])
+    @@map("order_items")
+}
+
+model Payment {
+    id            String        @id @default(cuid())
+    orderId       String
+    amount        Decimal       @db.Decimal(10, 2)
+    currency      String        @default("IDR")
+    paymentMethod String
+    status        PaymentStatus @default(PENDING)
+    paymentId     String?       @unique  // External payment ID from Doku
+    paymentUrl    String?
+    expiryDate    DateTime?
+    transactionId String?       @unique
+    paymentData   Json?
+    createdAt     DateTime      @default(now())
+    updatedAt     DateTime      @updatedAt
+
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    @@index([orderId])
+    @@index([status])
+    @@index([paymentId])
+    @@map("payments")
+}
+
+enum OrderStatus {
+    PENDING
+    CONFIRMED
+    PROCESSING
+    SHIPPED
+    DELIVERED
+    CANCELLED
+    REFUNDED
+}
+
+enum PaymentStatus {
+    PENDING
+    PROCESSING
+    COMPLETED
+    FAILED
+    REFUNDED
+    PAID
+}
