@@ -1,7 +1,7 @@
 import { MiddlewareHandler } from 'hono';
 import jwt from 'jsonwebtoken';
-import { JWT_CONFIG } from '../config/jwt.js';
 import logger from '../utils/logger.js';
+import { JWT_CONFIG } from '@/config/env.js';
 
 export interface AuthContext {
   userId: string;
@@ -28,7 +28,7 @@ export function authMiddleware(): MiddlewareHandler {
     const token = authHeader.replace('Bearer ', '');
 
     try {
-      const decoded = jwt.verify(token, JWT_CONFIG.secret!) as unknown as AuthContext;
+      const decoded = jwt.verify(token, JWT_CONFIG.secret) as unknown as AuthContext;
 
       // Add user ID to context
       c.set('userId', decoded.userId);
@@ -63,7 +63,7 @@ export function optionalAuthMiddleware(): MiddlewareHandler {
     const token = authHeader.replace('Bearer ', '');
 
     try {
-      const decoded = jwt.verify(token, JWT_CONFIG.secret!) as AuthContext;
+      const decoded = jwt.verify(token, JWT_CONFIG.secret) as AuthContext;
       c.set('userId', decoded.userId);
     } catch (error) {
       // Token is invalid, but we don't block the request

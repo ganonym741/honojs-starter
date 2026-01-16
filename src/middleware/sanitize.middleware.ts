@@ -1,26 +1,17 @@
-/**
- * Sanitization Middleware
- * Input sanitization to prevent XSS and injection attacks
- */
-
 import { MiddlewareHandler } from 'hono';
 
 export interface SanitizeConfig {
-  sanitizeBody?: boolean; // Sanitize request body
-  sanitizeQuery?: boolean; // Sanitize query parameters
-  sanitizeParams?: boolean; // Sanitize route parameters
-  stripTags?: boolean; // Strip HTML tags
-  encodeHtml?: boolean; // Encode HTML entities
-  trimWhitespace?: boolean; // Trim whitespace
-  removeNullBytes?: boolean; // Remove null bytes
-  maxLength?: number; // Maximum string length
-  allowedTags?: string[]; // Allowed HTML tags (if stripTags is false)
+  sanitizeBody?: boolean;
+  sanitizeQuery?: boolean;
+  sanitizeParams?: boolean;
+  stripTags?: boolean;
+  encodeHtml?: boolean;
+  trimWhitespace?: boolean;
+  removeNullBytes?: boolean;
+  maxLength?: number;
+  allowedTags?: string[];
 }
 
-/**
- * Sanitization middleware
- * Sanitizes user input to prevent XSS and injection attacks
- */
 export function sanitizeMiddleware(config: SanitizeConfig = {}): MiddlewareHandler {
   const {
     sanitizeBody = true,
@@ -34,9 +25,7 @@ export function sanitizeMiddleware(config: SanitizeConfig = {}): MiddlewareHandl
     allowedTags = [],
   } = config;
 
-  /**
-   * Sanitize a string value
-   */
+
   const sanitizeString = (value: string): string => {
     let sanitized = value;
 
@@ -62,7 +51,6 @@ export function sanitizeMiddleware(config: SanitizeConfig = {}): MiddlewareHandl
       );
     }
 
-    // Encode HTML entities
     if (encodeHtml) {
       sanitized = sanitized
         .replace(/&/g, '&')
@@ -72,7 +60,6 @@ export function sanitizeMiddleware(config: SanitizeConfig = {}): MiddlewareHandl
         .replace(/'/g, '&#x27;');
     }
 
-    // Truncate if too long
     if (sanitized.length > maxLength) {
       sanitized = sanitized.substring(0, maxLength);
     }
@@ -80,9 +67,6 @@ export function sanitizeMiddleware(config: SanitizeConfig = {}): MiddlewareHandl
     return sanitized;
   };
 
-  /**
-   * Sanitize an object recursively
-   */
   const sanitizeObject = (obj: any): any => {
     if (typeof obj === 'string') {
       return sanitizeString(obj);
@@ -104,34 +88,24 @@ export function sanitizeMiddleware(config: SanitizeConfig = {}): MiddlewareHandl
   };
 
   return async (c, next) => {
-    // Sanitize request body
     if (sanitizeBody) {
-      try {
-        const contentType = c.req.header('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const body = await c.req.json();
-          const sanitizedBody = sanitizeObject(body);
-          // Store sanitized body in context
-          c.set('sanitizedBody', sanitizedBody);
-        }
-      } catch (error) {
-        // Body might not be JSON or already parsed
+      const contentType = c.req.header('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const body = await c.req.json();
+        const sanitizedBody = sanitizeObject(body);
+        c.set('sanitizedBody', sanitizedBody);
       }
     }
 
-    // Sanitize query parameters
     if (sanitizeQuery) {
       const query = c.req.query();
       const sanitizedQuery = sanitizeObject(query);
-      // Store sanitized query in context
       c.set('sanitizedQuery', sanitizedQuery);
     }
 
-    // Sanitize route parameters
     if (sanitizeParams) {
       const params = c.req.param();
       const sanitizedParams = sanitizeObject(params);
-      // Store sanitized params in context
       c.set('sanitizedParams', sanitizedParams);
     }
 
@@ -139,13 +113,7 @@ export function sanitizeMiddleware(config: SanitizeConfig = {}): MiddlewareHandl
   };
 }
 
-/**
- * Sanitization presets for common use cases
- */
 export const SanitizePresets = {
-  /**
-   * Strict sanitization (maximum protection)
-   */
   strict: {
     sanitizeBody: true,
     sanitizeQuery: true,
@@ -156,10 +124,6 @@ export const SanitizePresets = {
     removeNullBytes: true,
     maxLength: 5000, // 5KB max
   },
-
-  /**
-   * Moderate sanitization (balanced protection)
-   */
   moderate: {
     sanitizeBody: true,
     sanitizeQuery: true,
@@ -170,10 +134,6 @@ export const SanitizePresets = {
     removeNullBytes: true,
     maxLength: 10000, // 10KB max
   },
-
-  /**
-   * Permissive sanitization (minimal protection)
-   */
   permissive: {
     sanitizeBody: true,
     sanitizeQuery: false,
@@ -184,10 +144,6 @@ export const SanitizePresets = {
     removeNullBytes: true,
     maxLength: 50000, // 50KB max
   },
-
-  /**
-   * Rich text sanitization (allows some HTML tags)
-   */
   richText: {
     sanitizeBody: true,
     sanitizeQuery: true,
@@ -201,13 +157,7 @@ export const SanitizePresets = {
   },
 };
 
-/**
- * Sanitization helpers
- */
 export const SanitizeHelpers = {
-  /**
-   * Apply sanitization middleware with environment-based configuration
-   */
   environmentBased: () => {
     const env = process.env.NODE_ENV || 'development';
     if (env === 'production') {
@@ -219,48 +169,17 @@ export const SanitizeHelpers = {
     }
   },
 
-  /**
-   * Apply sanitization middleware with custom configuration
-   */
   custom: (config: SanitizeConfig) => sanitizeMiddleware(config),
-
-  /**
-   * Apply sanitization middleware with strict settings
-   */
   strict: () => sanitizeMiddleware(SanitizePresets.strict),
-
-  /**
-   * Apply sanitization middleware with moderate settings
-   */
   moderate: () => sanitizeMiddleware(SanitizePresets.moderate),
-
-  /**
-   * Apply sanitization middleware with permissive settings
-   */
   permissive: () => sanitizeMiddleware(SanitizePresets.permissive),
-
-  /**
-   * Apply sanitization middleware with rich text settings
-   */
   richText: () => sanitizeMiddleware(SanitizePresets.richText),
-
-  /**
-   * Get sanitized body from context
-   */
   getSanitizedBody: (c: any): any => {
     return c.get('sanitizedBody');
   },
-
-  /**
-   * Get sanitized query from context
-   */
   getSanitizedQuery: (c: any): any => {
     return c.get('sanitizedQuery');
   },
-
-  /**
-   * Get sanitized params from context
-   */
   getSanitizedParams: (c: any): any => {
     return c.get('sanitizedParams');
   },

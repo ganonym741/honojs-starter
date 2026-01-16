@@ -34,11 +34,7 @@ import {
   SanitizePresets,
   SanitizeHelpers,
 } from './sanitize.middleware.js';
-
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS?.split(',') || [
-  'http://localhost:3000',
-  'http://localhost:5173',
-];
+import { CORS_CONFIG } from '@/config/env.js';
 
 
 /**
@@ -46,7 +42,7 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS?.split(',') || [
  */
 export function corsMiddleware(): MiddlewareHandler {
   return cors({
-    origin: ALLOWED_ORIGINS,
+    origin: CORS_CONFIG.allowedOrigins,
     credentials: true,
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],

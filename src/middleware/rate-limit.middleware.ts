@@ -1,6 +1,6 @@
 import { MiddlewareHandler } from 'hono';
 import logger from '../utils/logger.js';
-import { RedisService } from '@/infrastructure/cache/redis.service.js';
+import { RedisService } from '@/infrastructure/cache/cache.service.js';
 
 export interface RateLimitConfig {
   windowMs: number;

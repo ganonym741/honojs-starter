@@ -167,14 +167,9 @@ export const SecurityHelpers = {
       return securityMiddleware(SecurityPresets.development);
     }
   },
-
   custom: (config: SecurityConfig) => securityMiddleware(config),
-
   strict: () => securityMiddleware(SecurityPresets.strict),
-
   moderate: () => securityMiddleware(SecurityPresets.moderate),
-
   permissive: () => securityMiddleware(SecurityPresets.permissive),
-
   development: () => securityMiddleware(SecurityPresets.development),
 };
