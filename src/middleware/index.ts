@@ -55,8 +55,8 @@ export function corsMiddleware(): MiddlewareHandler {
 export function getMiddleware(): MiddlewareHandler[] {
   return [
     corsMiddleware(),
-    securityMiddleware(SecurityPresets.moderate),
-    customLoggerMiddleware(LoggerPresets.production),
+    securityMiddleware(SecurityPresets.development),
+    customLoggerMiddleware(LoggerPresets.debug),
   ];
 }
 
