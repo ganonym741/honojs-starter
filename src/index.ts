@@ -9,7 +9,8 @@ import { profileRoutes } from './modules/profile/profile.router.js';
 import { orderRoutes } from './modules/order/order.router.js';
 import { paymentRoutes } from './modules/payment/payment.router.js';
 import { validateAllEnvVars } from './config/env.config.js';
-import { ENV } from './config/env.js';
+import { ENV, isDevelopment } from './config/env.js';
+import { SwaggerService } from './infrastructure/swagger/swagger.service.js';
 
 const app = new Hono();
 
@@ -32,6 +33,11 @@ app.route('/api/users', userRoutes);
 app.route('/api/profile', profileRoutes);
 app.route('/api/orders', orderRoutes);
 app.route('/api/payments', paymentRoutes);
+
+if (isDevelopment()) {
+  const swaggerService = new SwaggerService();
+  app.get('/api/docs', swaggerService.handleSwaggerUI);
+}
 
 app.notFound(notFoundMiddleware());
 app.onError(errorMiddleware());
