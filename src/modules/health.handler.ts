@@ -1,6 +1,8 @@
-import prisma from '../config/database.js';
-import redis from '../config/redis.js';
+import prisma from '../infrastructure/database/database.service.js';
 import logger from '../utils/logger.js';
+import { RedisService } from '../infrastructure/cache/cache.service.js';
+
+const redisService = new RedisService();
 
 export interface HealthResponse {
   status: string;
@@ -37,7 +39,7 @@ export async function handleHealthCheck(c: any) {
 
   // Check Redis connection
   try {
-    await redis.ping();
+    await redisService.exists('health_check');
     health.services.redis = 'healthy';
   } catch (error) {
     logger.error('Redis health check failed:', error);

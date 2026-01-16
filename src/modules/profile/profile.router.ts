@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { ProfileHandler } from './profile.handler.js';
 import { profileServiceDep } from './profile.service.js';
 import { authMiddleware } from '../../middleware/auth.middleware.js';
-import { redisServiceDep } from '@/infrastructure/cache/redis.service.js';
+import { redisServiceDep } from '@/infrastructure/cache/cache.service.js';
 
 const profileRoutes = new Hono();
 const profileHandler = new ProfileHandler();

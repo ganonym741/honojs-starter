@@ -44,7 +44,7 @@ export interface Order {
   createdAt: Date;
   updatedAt: Date;
   items?: OrderItem[];
-  user?: User | null;
+  user?: Omit<User, 'password'> | null;
 }
 
 export interface OrderListResponse {
