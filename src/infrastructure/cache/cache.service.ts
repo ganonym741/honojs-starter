@@ -1,17 +1,22 @@
 import { Dependency } from 'hono-simple-di';
-import redis from '../../config/redis.js';
 import logger from '../../utils/logger.js';
+import Redis from 'ioredis';
+import { REDIS_CONFIG } from '@/config/env.js';
 
 export interface CacheOptions {
   ttl?: number; // Time to live in seconds
 }
 
 export class RedisService {
-  constructor() {}
+  private redis: Redis;
+  
+  constructor() {
+    this.redis = new Redis(REDIS_CONFIG);
+  }
 
   async get<T>(key: string): Promise<T | null> {
     try {
-      const value = await redis.get(key);
+      const value = await this.redis.get(key);
       if (!value) {
         return null;
       }
@@ -26,9 +31,9 @@ export class RedisService {
     try {
       const serialized = JSON.stringify(value);
       if (options?.ttl) {
-        await redis.setex(key, options.ttl, serialized);
+        await this.redis.setex(key, options.ttl, serialized);
       } else {
-        await redis.set(key, serialized);
+        await this.redis.set(key, serialized);
       }
       logger.debug('Cache set:', { key, ttl: options?.ttl });
     } catch (error) {
@@ -38,7 +43,7 @@ export class RedisService {
 
   async del(key: string): Promise<void> {
     try {
-      await redis.del(key);
+      await this.redis.del(key);
       logger.debug('Cache deleted:', { key });
     } catch (error) {
       logger.error('Redis delete error:', { key, error });
@@ -47,9 +52,9 @@ export class RedisService {
 
   async delPattern(pattern: string): Promise<void> {
     try {
-      const keys = await redis.keys(pattern);
+      const keys = await this.redis.keys(pattern);
       if (keys.length > 0) {
-        await redis.del(...keys);
+        await this.redis.del(...keys);
         logger.debug('Cache pattern deleted:', { pattern, count: keys.length });
       }
     } catch (error) {
@@ -59,7 +64,7 @@ export class RedisService {
 
   async exists(key: string): Promise<boolean> {
     try {
-      const result = await redis.exists(key);
+      const result = await this.redis.exists(key);
       return result === 1;
     } catch (error) {
       logger.error('Redis exists error:', { key, error });
@@ -69,7 +74,7 @@ export class RedisService {
 
   async incr(key: string): Promise<number> {
     try {
-      return await redis.incr(key);
+      return await this.redis.incr(key);
     } catch (error) {
       logger.error('Redis increment error:', { key, error });
       return 0;
@@ -78,7 +83,7 @@ export class RedisService {
 
   async expire(key: string, ttl: number): Promise<void> {
     try {
-      await redis.expire(key, ttl);
+      await this.redis.expire(key, ttl);
       logger.debug('Cache expiration set:', { key, ttl });
     } catch (error) {
       logger.error('Redis expire error:', { key, error });
@@ -87,7 +92,7 @@ export class RedisService {
 
   async mget<T>(keys: string[]): Promise<(T | null)[]> {
     try {
-      const values = await redis.mget(...keys);
+      const values = await this.redis.mget(...keys);
       return values.map((value) => (value ? JSON.parse(value) : null));
     } catch (error) {
       logger.error('Redis mget error:', { keys, error });
@@ -98,7 +103,7 @@ export class RedisService {
   async mset<T>(keyValuePairs: [string, T][]): Promise<void> {
     try {
       const flattened = keyValuePairs.flatMap(([key, value]) => [key, JSON.stringify(value)]);
-      await redis.mset(...flattened);
+      await this.redis.mset(...flattened);
       logger.debug('Cache mset:', { count: keyValuePairs.length });
     } catch (error) {
       logger.error('Redis mset error:', { count: keyValuePairs.length, error });
@@ -107,7 +112,7 @@ export class RedisService {
 
   async keys(pattern: string): Promise<string[]> {
     try {
-      return await redis.keys(pattern);
+      return await this.redis.keys(pattern);
     } catch (error) {
       logger.error('Redis keys error:', { pattern, error });
       return [];
@@ -116,7 +121,7 @@ export class RedisService {
 
   async flushDb(): Promise<void> {
     try {
-      await redis.flushdb();
+      await this.redis.flushdb();
       logger.warn('Redis database flushed');
     } catch (error) {
       logger.error('Redis flushdb error:', error);
@@ -129,8 +134,8 @@ export class RedisService {
     hitRate: number;
   }> {
     try {
-      const keyCount = await redis.dbsize();
-      const info = await redis.info('memory');
+      const keyCount = await this.redis.dbsize();
+      const info = await this.redis.info('memory');
       const memoryMatch = info.match(/used_memory_human:([^\r\n]+)/);
       const memoryUsage = memoryMatch ? memoryMatch[1] : 'unknown';
 
@@ -151,7 +156,7 @@ export class RedisService {
 
   async disconnect(): Promise<void> {
     try {
-      await redis.quit();
+      await this.redis.quit();
       logger.info('Redis connection closed');
     } catch (error) {
       logger.error('Redis disconnect error:', error);
