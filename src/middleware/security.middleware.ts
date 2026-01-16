@@ -24,10 +24,10 @@ export function securityMiddleware(config: SecurityConfig = {}): MiddlewareHandl
   const {
     contentSecurityPolicy = "default-src 'self'", // Only allow resources from same origin
     contentSecurityPolicyReportOnly = "default-src 'self'",
-    crossOriginEmbedderPolicy = "require-corp", // Require corporate embedding
-    crossOriginOpenerPolicy = "same-origin", // Only allow same origin
-    crossOriginResourcePolicy = "same-origin", // Only allow same origin
-    dnsPrefetchControl = "off", // Disable DNS prefetching
+    crossOriginEmbedderPolicy = 'require-corp', // Require corporate embedding
+    crossOriginOpenerPolicy = 'same-origin', // Only allow same origin
+    crossOriginResourcePolicy = 'same-origin', // Only allow same origin
+    dnsPrefetchControl = 'off', // Disable DNS prefetching
     frameguard = true, // Prevent clickjacking
     hsts = true, // Enable HSTS
     hstsMaxAge = 31536000, // 1 year (31536000 seconds)
@@ -36,7 +36,7 @@ export function securityMiddleware(config: SecurityConfig = {}): MiddlewareHandl
     ieNoOpen = true, // Prevent IE from opening files
     noSniff = true, // Prevent MIME type sniffing
     noReferrer = true, // Hide referrer
-    referrerPolicy = "no-referrer",
+    referrerPolicy = 'no-referrer',
     xssProtection = true, // Enable XSS protection
     permissionsPolicy = "geolocation 'self'; microphone 'none'", // Only allow geolocation from same origin
   } = config;
@@ -44,72 +44,71 @@ export function securityMiddleware(config: SecurityConfig = {}): MiddlewareHandl
   return async (c, next) => {
     // Content Security Policy
     if (contentSecurityPolicy) {
-      c.header("Content-Security-Policy", contentSecurityPolicy);
+      c.header('Content-Security-Policy', contentSecurityPolicy);
     }
     if (contentSecurityPolicyReportOnly) {
-      c.header("Content-Security-Policy-Report-Only", contentSecurityPolicyReportOnly);
+      c.header('Content-Security-Policy-Report-Only', contentSecurityPolicyReportOnly);
     }
 
     // Cross Origin policies
     if (crossOriginEmbedderPolicy) {
-      c.header("Cross-Origin-Embedder-Policy", crossOriginEmbedderPolicy);
+      c.header('Cross-Origin-Embedder-Policy', crossOriginEmbedderPolicy);
     }
     if (crossOriginOpenerPolicy) {
-      c.header("Cross-Origin-Opener-Policy", crossOriginOpenerPolicy);
+      c.header('Cross-Origin-Opener-Policy', crossOriginOpenerPolicy);
     }
     if (crossOriginResourcePolicy) {
-      c.header("Cross-Origin-Resource-Policy", crossOriginResourcePolicy);
+      c.header('Cross-Origin-Resource-Policy', crossOriginResourcePolicy);
     }
 
     // DNS Prefetch Control
     if (dnsPrefetchControl) {
-      c.header("DNS-Prefetch-Control", dnsPrefetchControl);
+      c.header('DNS-Prefetch-Control', dnsPrefetchControl);
     }
 
     // Frameguard (prevent clickjacking)
     if (frameguard) {
-      c.header("X-Frame-Options", "SAMEORIGIN");
+      c.header('X-Frame-Options', 'SAMEORIGIN');
     }
 
     // HSTS (HTTP Strict Transport Security)
     if (hsts) {
       let hstsValue = `max-age=${hstsMaxAge}`;
       if (hstsIncludeSubdomains) {
-        hstsValue += "; includeSubDomains";
+        hstsValue += '; includeSubDomains';
       }
       if (hstsPreload) {
-        hstsValue += "; preload";
+        hstsValue += '; preload';
       }
-      c.header("Strict-Transport-Security", hstsValue);
+      c.header('Strict-Transport-Security', hstsValue);
     }
 
     // IE protections
     if (ieNoOpen) {
-      c.header("X-Content-Type-Options", "nosniff");
+      c.header('X-Content-Type-Options', 'nosniff');
     }
     if (noSniff) {
-      c.header("X-Content-Type-Options", "nosniff");
+      c.header('X-Content-Type-Options', 'nosniff');
     }
 
     // Referrer Policy
     if (noReferrer) {
-      c.header("Referrer-Policy", referrerPolicy);
+      c.header('Referrer-Policy', referrerPolicy);
     }
 
     // XSS Protection
     if (xssProtection) {
-      c.header("X-XSS-Protection", "1; mode=block");
+      c.header('X-XSS-Protection', '1; mode=block');
     }
 
     // Permissions Policy
     if (permissionsPolicy) {
-      c.header("Permissions-Policy", permissionsPolicy);
+      c.header('Permissions-Policy', permissionsPolicy);
     }
 
     await next();
   };
 }
-
 
 export const SecurityPresets = {
   strict: {
@@ -136,7 +135,7 @@ export const SecurityPresets = {
     xssProtection: true,
   },
   permissive: {
-    contentSecurityPolicy: "default-src *",
+    contentSecurityPolicy: 'default-src *',
     frameguard: false,
     hsts: false,
     ieNoOpen: true,
@@ -145,7 +144,8 @@ export const SecurityPresets = {
     xssProtection: false,
   },
   development: {
-    contentSecurityPolicy: "default-src 'self' http://localhost:*",
+    contentSecurityPolicy:
+      "default-src 'self' http://localhost:*; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' http://localhost:*",
     frameguard: false,
     hsts: false,
     ieNoOpen: true,
@@ -155,13 +155,12 @@ export const SecurityPresets = {
   },
 };
 
-
 export const SecurityHelpers = {
   environmentBased: () => {
-    const env = process.env.NODE_ENV || "development";
-    if (env === "production") {
+    const env = process.env.NODE_ENV || 'development';
+    if (env === 'production') {
       return securityMiddleware(SecurityPresets.strict);
-    } else if (env === "staging") {
+    } else if (env === 'staging') {
       return securityMiddleware(SecurityPresets.moderate);
     } else {
       return securityMiddleware(SecurityPresets.development);
