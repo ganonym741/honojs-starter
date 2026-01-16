@@ -7,25 +7,25 @@ A production-ready, feature-rich Hono.js boilerplate with modern best practices,
 - ✅ **JWT Authentication** - Secure token-based authentication with refresh tokens
 - ✅ **PostgreSQL + Prisma** - Type-safe database ORM with migrations
 - ✅ **Database Seeder** - Seed data for development and testing
-- ✅ **Image Upload** - File upload with validation and storage management
 - ✅ **User Profile** - Complete CRUD operations for user profiles
 - ✅ **Order Management** - Order creation, tracking, and status management
 - ✅ **Doku Payment Gateway** - Integrated payment processing
 - ✅ **Redis Caching** - Performance optimization with Redis
-- ✅ **Swagger Documentation** - Interactive API documentation at `/api/docs`
 - ✅ **Rate Limiting** - API rate limiting for security
 - ✅ **Structured Logging** - Winston logger with multiple transports
 - ✅ **Error Handling** - Centralized error handling
 - ✅ **Input Validation** - Request validation with Zod
+- ✅ **Input Sanitization** - XSS prevention and input cleaning
+- ✅ **Security Headers** - Comprehensive security middleware
 - ✅ **TypeScript** - Full type safety throughout
 - ✅ **Docker Support** - Complete containerization for deployment
 
 ## 📋 Prerequisites
 
-- Node.js 18+
+- Bun 1.0+
 - PostgreSQL 15+
 - Redis 7+
-- npm or yarn or pnpm
+- npm, yarn, pnpm, or bun
 
 ## 🛠️ Installation
 
@@ -39,6 +39,8 @@ cd honojs-boilerplate
 ### 2. Install dependencies
 
 ```bash
+bun install
+# or
 npm install
 # or
 yarn install
@@ -58,6 +60,7 @@ Edit `.env` with your configuration:
 # Server Configuration
 NODE_ENV=development
 PORT=3000
+API_VERSION=v1
 
 # Database Configuration
 DATABASE_URL="postgresql://user:password@localhost:5432/honojs_db"
@@ -65,38 +68,54 @@ DATABASE_URL="postgresql://user:password@localhost:5432/honojs_db"
 # Redis Configuration
 REDIS_HOST=localhost
 REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
 
 # JWT Configuration
-JWT_SECRET=your_super_secret_jwt_key
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+JWT_ACCESS_TOKEN_EXPIRY=15m
+JWT_REFRESH_TOKEN_EXPIRY=7d
 
-# Doku Payment Gateway
+# Doku Payment Gateway Configuration
 DOKU_CLIENT_ID=your_doku_client_id
 DOKU_SECRET_KEY=your_doku_secret_key
 DOKU_ENVIRONMENT=sandbox
+DOKU_WEBHOOK_SECRET=your_webhook_secret
+
+# CORS Configuration
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+
+# Rate Limiting Configuration
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Logging Configuration
+LOG_LEVEL=info
+LOG_FORMAT=json
 ```
 
 ### 4. Setup database
 
 ```bash
 # Generate Prisma Client
-npm run prisma:generate
+bun run db:generate
 
 # Run migrations
-npm run prisma:migrate
+bun run db:migration
 
 # Seed database (optional)
-npm run prisma:seed
+bun run db:seeding
 ```
 
 ### 5. Start the server
 
 ```bash
 # Development mode
-npm run dev
+bun run dev
 
 # Production mode
-npm run build
-npm start
+bun run build
+bun start
 ```
 
 ## 🐳 Docker Deployment
@@ -133,46 +152,90 @@ docker run -p 3000:3000 --env-file .env honojs-boilerplate
 honojs/
 ├── prisma/                    # Database schema and migrations
 │   ├── schema.prisma           # Database schema
-│   ├── migrations/              # Database migrations
-│   └── seed.ts                # Database seeder
+│   ├── prisma.config.ts        # Prisma configuration
+│   ├── seeding-service.ts      # Database seeder
+│   └── seeder/                # Seed data modules
+│       ├── user.seeder.ts
+│       ├── profile.seeder.ts
+│       ├── order.seeder.ts
+│       └── order-item.seeder.ts
 ├── src/
-│   ├── config/                 # Configuration files
-│   │   ├── database.ts         # Database connection
-│   │   ├── redis.ts            # Redis connection
-│   │   ├── jwt.ts              # JWT configuration
-│   │   ├── upload.ts           # Upload configuration
-│   │   └── doku.ts            # Doku payment config
-│   ├── middleware/             # HTTP middleware
-│   │   ├── index.ts            # Middleware registry
-│   │   ├── error.middleware.ts   # Error handling
+│   ├── index.ts               # Application entry point
+│   ├── config/                # Configuration files
+│   │   ├── env.ts            # Environment configuration
+│   │   └── env.config.ts     # Environment validation
+│   ├── middleware/            # HTTP middleware
+│   │   ├── index.ts           # Middleware registry
 │   │   ├── auth.middleware.ts    # JWT authentication
+│   │   ├── error.middleware.ts   # Error handling
 │   │   ├── validation.middleware.ts # Request validation
 │   │   ├── rate-limit.middleware.ts # Rate limiting
-│   │   └── logger.middleware.ts  # Request logging
-│   ├── modules/                # Feature modules
+│   │   ├── logger.middleware.ts  # Request logging
+│   │   ├── security.middleware.ts # Security headers
+│   │   ├── sanitize.middleware.ts # Input sanitization
+│   │   └── cache.middleware.ts    # Response caching
+│   ├── modules/               # Feature modules
 │   │   ├── auth/              # Authentication module
+│   │   │   ├── auth.router.ts
+│   │   │   ├── auth.handler.ts
+│   │   │   ├── auth.service.ts
+│   │   │   └── auth.interface.ts
 │   │   ├── user/              # User management
-│   │   ├── upload/            # File upload
+│   │   │   ├── user.router.ts
+│   │   │   ├── user.handler.ts
+│   │   │   ├── user.service.ts
+│   │   │   └── user.interface.ts
+│   │   ├── profile/           # Profile management
+│   │   │   ├── profile.router.ts
+│   │   │   ├── profile.handler.ts
+│   │   │   ├── profile.service.ts
+│   │   │   └── profile.interface.ts
 │   │   ├── order/             # Order management
-│   │   ├── payment/           # Payment processing
-│   │   └── profile/           # Profile management
-│   ├── infrastructure/          # External integrations
-│   │   ├── cache/             # Redis service
-│   │   └── storage/           # File storage
-│   ├── utils/                 # Utility functions
-│   │   ├── logger.ts           # Winston logger
-│   │   ├── crypto.ts           # Cryptography utilities
-│   │   ├── file.ts            # File utilities
-│   │   └── response.ts        # Response helpers
-│   ├── types/                 # TypeScript types
-│   └── validators/            # Zod schemas
+│   │   │   ├── order.router.ts
+│   │   │   ├── order.handler.ts
+│   │   │   ├── order.service.ts
+│   │   │   └── order.interface.ts
+│   │   └── payment/           # Payment processing
+│   │       ├── payment.router.ts
+│   │       ├── payment.handler.ts
+│   │       ├── payment.service.ts
+│   │       └── payment.interface.ts
+│   ├── infrastructure/        # External integrations
+│   │   ├── cache/
+│   │   │   └── cache.service.ts   # Redis service
+│   │   └── database/
+│   │       └── database.service.ts # Prisma client
+│   ├── utils/                # Utility functions
+│   │   ├── logger.ts          # Winston logger
+│   │   ├── crypto.ts          # Cryptography utilities
+│   │   ├── response.ts        # Response helpers
+│   │   └── env-validator.ts   # Environment validation
+│   └── validators/           # Zod schemas
+│       ├── auth.validator.ts
+│       ├── user.validator.ts
+│       ├── profile.validator.ts
+│       ├── order.validator.ts
+│       ├── payment.validator.ts
+│       └── upload.validator.ts
 ├── tests/                    # Test files
 │   ├── unit/                  # Unit tests
-│   └── integration/           # Integration tests
-├── uploads/                  # Upload directory
+│   │   └── middleware/
+│   │       ├── rate-limit.middleware.test.ts
+│   │       ├── sanitize.middleware.test.ts
+│   │       ├── security.middleware.test.ts
+│   │       └── validation.middleware.test.ts
+│   └── example.test.ts
+├── docs/                     # Documentation
+├── .env.example               # Environment template
+├── .gitignore
+├── .eslintrc.json
+├── .prettierrc
+├── .dockerignore
+├── docker-compose.yml
+├── Dockerfile
 ├── package.json
 ├── tsconfig.json
-├── docker-compose.yml
+├── vitest.config.ts
 └── README.md
 ```
 
@@ -195,24 +258,19 @@ POST   /api/auth/reset-password  # Reset password
 ```
 GET    /api/users/me             # Get current user profile
 PUT    /api/users/me             # Update current user profile
+PUT    /api/users/me/password     # Update user password
 DELETE /api/users/me             # Delete current user account
-GET    /api/users/:id            # Get user by ID (admin)
-```
-
-### Upload
-
-```
-POST   /api/upload/image         # Upload single image
-POST   /api/upload/images        # Upload multiple images
-DELETE /api/upload/:id           # Delete uploaded file
+PATCH  /api/users/me/deactivate  # Deactivate user account
+PATCH  /api/users/me/activate   # Activate user account
 ```
 
 ### Profile
 
 ```
 GET    /api/profile              # Get user profile
+POST   /api/profile              # Create user profile
 PUT    /api/profile              # Update user profile
-PATCH  /api/profile/avatar       # Update avatar
+DELETE /api/profile              # Delete user profile
 ```
 
 ### Orders
@@ -222,8 +280,8 @@ GET    /api/orders               # List user orders
 POST   /api/orders               # Create new order
 GET    /api/orders/:id            # Get order details
 PUT    /api/orders/:id           # Update order
-DELETE /api/orders/:id           # Cancel order
-GET    /api/orders/:id/items     # Get order items
+POST   /api/orders/:id/cancel    # Cancel order
+DELETE /api/orders/:id           # Delete order
 ```
 
 ### Payment
@@ -233,13 +291,14 @@ POST   /api/payment/initiate     # Initiate payment
 POST   /api/payment/callback     # Payment callback (webhook)
 GET    /api/payment/:id/status    # Get payment status
 POST   /api/payment/verify       # Verify payment
+POST   /api/payment/refund       # Refund payment
+GET    /api/payment/statistics   # Get payment statistics
 ```
 
 ### Health & Utility
 
 ```
 GET    /health                   # Health check
-GET    /api/docs                 # Swagger documentation
 GET    /api/version              # API version
 ```
 
@@ -249,13 +308,13 @@ GET    /api/version              # API version
 
 ```bash
 # Run all tests
-npm test
+bun test
 
 # Run tests with coverage
-npm run test:coverage
+bun run test:coverage
 
 # Run tests in watch mode
-npm test -- --watch
+bun test -- --watch
 ```
 
 ### Test structure
@@ -263,13 +322,12 @@ npm test -- --watch
 ```bash
 tests/
 ├── unit/              # Unit tests for services and utilities
-│   ├── auth.service.test.ts
-│   ├── user.service.test.ts
-│   └── ...
-└── integration/       # Integration tests for API endpoints
-    ├── auth.test.ts
-    ├── user.test.ts
-    └── ...
+│   └── middleware/
+│       ├── rate-limit.middleware.test.ts
+│       ├── sanitize.middleware.test.ts
+│       ├── security.middleware.test.ts
+│       └── validation.middleware.test.ts
+└── example.test.ts   # Example test
 ```
 
 ## 📝 Code Quality
@@ -278,20 +336,20 @@ tests/
 
 ```bash
 # Run ESLint
-npm run lint
+bun run lint
 
 # Fix linting issues
-npm run lint:fix
+bun run lint:fix
 ```
 
 ### Formatting
 
 ```bash
 # Format code with Prettier
-npm run format
+bun run format
 
 # Check formatting
-npm run format:check
+bun run format:check
 ```
 
 ## 🔧 Development Tools
@@ -299,7 +357,7 @@ npm run format:check
 ### Prisma Studio
 
 ```bash
-npm run prisma:studio
+bun run db:studio
 ```
 
 Open Prisma Studio to interact with your database visually.
@@ -314,7 +372,7 @@ npx prisma migrate dev --name <migration-name>
 npx prisma migrate reset
 
 # Generate Prisma Client
-npx prisma generate
+bun run db:generate
 ```
 
 ## 🚢 Deployment
@@ -336,19 +394,6 @@ DOKU_ENVIRONMENT=production
 ALLOWED_ORIGINS=https://yourdomain.com
 ```
 
-### Deployment Checklist
-
-- [ ] Set all environment variables
-- [ ] Configure production database
-- [ ] Configure Redis
-- [ ] Set secure JWT_SECRET
-- [ ] Configure Doku production credentials
-- [ ] Set up SSL/TLS certificates
-- [ ] Configure CORS origins
-- [ ] Set up monitoring and logging
-- [ ] Configure backups
-- [ ] Set up auto-scaling (if needed)
-
 ## 🔒 Security
 
 ### Security Features
@@ -357,11 +402,11 @@ ALLOWED_ORIGINS=https://yourdomain.com
 - Password hashing with bcrypt
 - Rate limiting on all endpoints
 - Input validation with Zod
+- Input sanitization (XSS prevention)
 - CORS configuration
-- File upload validation
 - Payment signature verification
 - SQL injection prevention (Prisma)
-- XSS prevention
+- Comprehensive security headers
 
 ### Security Best Practices
 
@@ -370,7 +415,7 @@ ALLOWED_ORIGINS=https://yourdomain.com
 3. **Enable HTTPS** - Always use HTTPS in production
 4. **Validate all inputs** - Use Zod schemas
 5. **Implement rate limiting** - Prevent abuse
-6. **Sanitize file uploads** - Validate type, size, content
+6. **Sanitize all inputs** - Use sanitization middleware
 7. **Regular updates** - Keep dependencies updated
 8. **Monitor logs** - Track security events
 
@@ -378,12 +423,12 @@ ALLOWED_ORIGINS=https://yourdomain.com
 
 ### Caching Strategy
 
-| Data Type | Cache Duration | Invalidation Strategy |
-|-----------|----------------|---------------------|
-| User Profile | 1 hour | On profile update |
-| Order Details | 30 minutes | On order update |
-| Product List | 5 minutes | Scheduled |
-| API Responses | 1-15 minutes | Time-based |
+| Data Type    | Cache Duration | Invalidation Strategy |
+| ------------ | -------------- | --------------------- |
+| User Profile | 1 hour         | On profile update     |
+| Profile Data | 1 hour         | On profile update     |
+| Order List   | 30 minutes     | On order update       |
+| Payment Data | 30 minutes     | On payment update     |
 
 ### Optimization Tips
 
@@ -408,7 +453,7 @@ MIT License - see LICENSE file for details
 
 ## 👥 Authors
 
-- Kilo Code - Initial work
+- Ganonym741 - Initial work
 
 ## 🙏 Acknowledgments
 
