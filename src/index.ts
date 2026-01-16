@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { getMiddleware } from './middleware/index.js';
 import { errorMiddleware, notFoundMiddleware } from './middleware/error.middleware.js';
@@ -9,8 +8,12 @@ import { userRoutes } from './modules/user/user.router.js';
 import { profileRoutes } from './modules/profile/profile.router.js';
 import { orderRoutes } from './modules/order/order.router.js';
 import { paymentRoutes } from './modules/payment/payment.router.js';
+import { validateAllEnvVars } from './config/env.config.js';
+import { ENV } from './config/env.js';
 
 const app = new Hono();
+
+validateAllEnvVars();
 
 const middleware = getMiddleware();
 middleware.forEach(mw => app.use('*', mw));
@@ -33,14 +36,10 @@ app.route('/api/payments', paymentRoutes);
 app.notFound(notFoundMiddleware());
 app.onError(errorMiddleware());
 
-const PORT = parseInt(process.env.PORT || '3000');
-
-console.log(`Server starting on port ${PORT}`);
+console.log(`Server starting on port ${ENV.port}`);
 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 
-serve({
-  fetch: app.fetch,
-  port: PORT
-});
-
-export default app;
+export default { 
+  port: ENV.port, 
+  fetch: app.fetch, 
+};
