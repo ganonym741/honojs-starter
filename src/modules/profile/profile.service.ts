@@ -1,8 +1,8 @@
-import prisma from '../../config/database.js';
+import prisma from '../../infrastructure/database/database.service.js';
 import { CreateProfileDTO, UpdateProfileDTO, UserProfile } from './profile.interface.js';
 import logger from '../../utils/logger.js';
 import { Dependency } from 'hono-simple-di';
-import { RedisService, redisServiceDep } from '@/infrastructure/cache/redis.service.js';
+import { RedisService, redisServiceDep } from '@/infrastructure/cache/cache.service.js';
 
 const PROFILE_CACHE_PREFIX = 'profile:';
 const PROFILE_CACHE_TTL = 3600; // 1 hour

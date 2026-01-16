@@ -1,11 +1,11 @@
-import { DOKU_CONFIG as dokuConfig } from '../../config/doku.js';
 import logger from '../../utils/logger.js';
 import crypto from 'crypto';
 import axios from 'axios';
-import prisma from '@/config/database.js';
+import prisma from '@/infrastructure/database/database.service.js';
 import { Dependency } from 'hono-simple-di';
-import { RedisService, redisServiceDep } from '@/infrastructure/cache/redis.service.js';
+import { RedisService, redisServiceDep } from '@/infrastructure/cache/cache.service.js';
 import { PaymentStatus, OrderStatus } from '../../../prisma/generated/enums.js';
+import { DOKU_CONFIG } from '@/config/env.js';
 
 const PAYMENT_CACHE_PREFIX = 'payment:';
 const PAYMENT_CACHE_TTL = 30 * 60; // 30 minutes
@@ -520,14 +520,14 @@ export class PaymentService {
       const digest = crypto.createHash('sha256').update(JSON.stringify(requestBody)).digest('hex');
 
       const signature = crypto
-        .createHmac('sha256', dokuConfig.secretKey)
-        .update(`${dokuConfig.clientId}:${timestamp}:${requestId}:${digest}`)
+        .createHmac('sha256', DOKU_CONFIG.secretKey)
+        .update(`${DOKU_CONFIG.clientId}:${timestamp}:${requestId}:${digest}`)
         .digest('hex');
 
-      const response = await axios.post(`${dokuConfig.baseUrl}/payments/v1`, requestBody, {
+      const response = await axios.post(`${DOKU_CONFIG.baseUrl}/payments/v1`, requestBody, {
         headers: {
           'Content-Type': 'application/json',
-          'Client-Id': dokuConfig.clientId,
+          'Client-Id': DOKU_CONFIG.clientId,
           'Request-Id': requestId,
           'Request-Timestamp': timestamp,
           Signature: signature,
@@ -557,14 +557,14 @@ export class PaymentService {
       const digest = crypto.createHash('sha256').update(JSON.stringify(requestBody)).digest('hex');
 
       const signature = crypto
-        .createHmac('sha256', dokuConfig.secretKey)
-        .update(`${dokuConfig.clientId}:${timestamp}:${requestId}:${digest}`)
+        .createHmac('sha256', DOKU_CONFIG.secretKey)
+        .update(`${DOKU_CONFIG.clientId}:${timestamp}:${requestId}:${digest}`)
         .digest('hex');
 
-      const response = await axios.post(`${dokuConfig.baseUrl}/payments/v1/refund`, requestBody, {
+      const response = await axios.post(`${DOKU_CONFIG.baseUrl}/payments/v1/refund`, requestBody, {
         headers: {
           'Content-Type': 'application/json',
-          'Client-Id': dokuConfig.clientId,
+          'Client-Id': DOKU_CONFIG.clientId,
           'Request-Id': requestId,
           'Request-Timestamp': timestamp,
           Signature: signature,
@@ -590,7 +590,7 @@ export class PaymentService {
       const digest = crypto.createHash('sha256').update(JSON.stringify(dataToVerify)).digest('hex');
 
       const expectedSignature = crypto
-        .createHmac('sha256', dokuConfig.secretKey)
+        .createHmac('sha256', DOKU_CONFIG.secretKey)
         .update(digest)
         .digest('hex');
 

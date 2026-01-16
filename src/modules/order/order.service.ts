@@ -1,5 +1,5 @@
-import prisma from '../../config/database.js';
-import { RedisService, redisServiceDep } from '../../infrastructure/cache/redis.service.js';
+import prisma from '../../infrastructure/database/database.service.js';
+import { RedisService, redisServiceDep } from '../../infrastructure/cache/cache.service.js';
 import { CreateOrderDTO, UpdateOrderDTO, Order, OrderListResponse } from './order.interface.js';
 import logger from '../../utils/logger.js';
 import { Dependency } from 'hono-simple-di';

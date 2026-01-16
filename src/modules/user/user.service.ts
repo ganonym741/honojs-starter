@@ -1,8 +1,8 @@
-import prisma from '../../config/database.js';
+import prisma from '../../infrastructure/database/database.service.js';
 import {
   RedisService,
   redisServiceDep,
-} from '../../infrastructure/cache/redis.service.js';
+} from '../../infrastructure/cache/cache.service.js';
 import { hashPassword, verifyPassword } from '../../utils/crypto.js';
 import {
   UpdateProfileDTO,
@@ -106,6 +106,10 @@ export class UserService {
   async updatePassword(userId: string, dto: UpdatePasswordDTO): Promise<void> {
     try {
       const user = await prisma.user.findUnique({
+        select: {
+          id: true,
+          password: true
+        },
         where: { id: userId },
       });
 
@@ -136,6 +140,10 @@ export class UserService {
   async deleteAccount(userId: string, dto: DeleteAccountDTO): Promise<void> {
     try {
       const user = await prisma.user.findUnique({
+        select: {
+          id: true,
+          password: true
+        },
         where: { id: userId },
       });
 

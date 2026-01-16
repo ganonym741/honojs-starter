@@ -1,10 +1,10 @@
-import prisma from '../../config/database.js';
+import prisma from '../../infrastructure/database/database.service.js';
 import jwt from 'jsonwebtoken';
 import { hashPassword, verifyPassword } from '../../utils/crypto.js';
-import { JWT_CONFIG } from '../../config/jwt.js';
 import { RegisterDTO, LoginDTO, AuthResponse, RefreshTokenDTO, JWTPayload } from './auth.interface.js';
 import logger from '../../utils/logger.js';
 import { Dependency } from 'hono-simple-di';
+import { JWT_CONFIG } from '@/config/env.js';
 
 export class AuthService {
   constructor() {}
@@ -52,6 +52,15 @@ export class AuthService {
     try {
       const user = await prisma.user.findUnique({
         where: { email: dto.email },
+        select: {
+          id: true,
+          isActive: true,
+          password: true,
+          email: true,
+          name: true,
+          avatar: true,
+          phone: true,
+        }
       });
 
       if (!user) {
@@ -138,7 +147,7 @@ export class AuthService {
 
   async verifyEmail(token: string): Promise<void> {
     try {
-      const decoded = jwt.verify(token, JWT_CONFIG.secret!) as JWTPayload;
+      const decoded = jwt.verify(token, JWT_CONFIG.secret) as JWTPayload;
 
       await prisma.user.update({
         where: { id: decoded.userId },
@@ -159,7 +168,7 @@ export class AuthService {
       exp: Math.floor(Date.now() / 1000) + (15 * 60), // 15 minutes
     };
 
-    const accessToken = jwt.sign(payload, JWT_CONFIG.secret!, {
+    const accessToken = jwt.sign(payload, JWT_CONFIG.secret, {
       expiresIn: JWT_CONFIG.accessTokenExpiry,
       issuer: JWT_CONFIG.issuer,
       audience: JWT_CONFIG.audience,
