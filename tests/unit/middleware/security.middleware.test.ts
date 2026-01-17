@@ -4,7 +4,11 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Hono } from 'hono';
-import { securityMiddleware, SecurityPresets, SecurityHelpers } from '../../../src/middleware/security.middleware.js';
+import {
+  securityMiddleware,
+  SecurityPresets,
+  SecurityHelpers,
+} from '../../../src/middleware/security.middleware.js';
 
 describe('Security Middleware', () => {
   let app: Hono;
@@ -15,13 +19,9 @@ describe('Security Middleware', () => {
 
   describe('securityMiddleware', () => {
     it('should add security headers', async () => {
-      app.get(
-        '/test',
-        securityMiddleware(),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', securityMiddleware(), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -34,13 +34,9 @@ describe('Security Middleware', () => {
     });
 
     it('should add HSTS header when enabled', async () => {
-      app.get(
-        '/test',
-        securityMiddleware({ hsts: true, hstsMaxAge: 31536000 }),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', securityMiddleware({ hsts: true, hstsMaxAge: 31536000 }), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -58,7 +54,9 @@ describe('Security Middleware', () => {
 
       const response = await app.request('/test');
 
-      expect(response.headers.get('Strict-Transport-Security')).toBe('max-age=31536000; includeSubDomains');
+      expect(response.headers.get('Strict-Transport-Security')).toBe(
+        'max-age=31536000; includeSubDomains'
+      );
     });
 
     it('should include preload in HSTS when configured', async () => {
@@ -91,17 +89,15 @@ describe('Security Middleware', () => {
 
       const response = await app.request('/test');
 
-      expect(response.headers.get('Strict-Transport-Security')).toBe('max-age=31536000; includeSubDomains; preload');
+      expect(response.headers.get('Strict-Transport-Security')).toBe(
+        'max-age=31536000; includeSubDomains; preload'
+      );
     });
 
     it('should not add HSTS header when disabled', async () => {
-      app.get(
-        '/test',
-        securityMiddleware({ hsts: false }),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', securityMiddleware({ hsts: false }), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -119,18 +115,16 @@ describe('Security Middleware', () => {
 
       const response = await app.request('/test');
 
-      expect(response.headers.get('Permissions-Policy')).toBe("geolocation 'self'; microphone 'none'");
+      expect(response.headers.get('Permissions-Policy')).toBe(
+        "geolocation 'self'; microphone 'none'"
+      );
     });
 
     it('should use custom CSP when provided', async () => {
       const customCSP = "default-src 'self'; script-src 'self' 'unsafe-inline'";
-      app.get(
-        '/test',
-        securityMiddleware({ contentSecurityPolicy: customCSP }),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', securityMiddleware({ contentSecurityPolicy: customCSP }), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -160,29 +154,23 @@ describe('Security Middleware', () => {
 
   describe('SecurityPresets', () => {
     it('should apply strict preset', async () => {
-      app.get(
-        '/test',
-        securityMiddleware(SecurityPresets.strict),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', securityMiddleware(SecurityPresets.strict), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
       expect(response.status).toBe(200);
-      expect(response.headers.get('Strict-Transport-Security')).toBe('max-age=31536000; includeSubDomains; preload');
+      expect(response.headers.get('Strict-Transport-Security')).toBe(
+        'max-age=31536000; includeSubDomains; preload'
+      );
       expect(response.headers.get('X-Frame-Options')).toBe('SAMEORIGIN');
     });
 
     it('should apply moderate preset', async () => {
-      app.get(
-        '/test',
-        securityMiddleware(SecurityPresets.moderate),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', securityMiddleware(SecurityPresets.moderate), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -191,13 +179,9 @@ describe('Security Middleware', () => {
     });
 
     it('should apply permissive preset', async () => {
-      app.get(
-        '/test',
-        securityMiddleware(SecurityPresets.permissive),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', securityMiddleware(SecurityPresets.permissive), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -207,13 +191,9 @@ describe('Security Middleware', () => {
     });
 
     it('should apply development preset', async () => {
-      app.get(
-        '/test',
-        securityMiddleware(SecurityPresets.development),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', securityMiddleware(SecurityPresets.development), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -224,13 +204,9 @@ describe('Security Middleware', () => {
 
   describe('SecurityHelpers', () => {
     it('should provide custom helper', async () => {
-      app.get(
-        '/test',
-        SecurityHelpers.custom({ hsts: true, hstsMaxAge: 1800 }),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', SecurityHelpers.custom({ hsts: true, hstsMaxAge: 1800 }), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -239,28 +215,22 @@ describe('Security Middleware', () => {
     });
 
     it('should provide strict helper', async () => {
-      app.get(
-        '/test',
-        SecurityHelpers.strict(),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', SecurityHelpers.strict(), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
       expect(response.status).toBe(200);
-      expect(response.headers.get('Strict-Transport-Security')).toBe('max-age=31536000; includeSubDomains; preload');
+      expect(response.headers.get('Strict-Transport-Security')).toBe(
+        'max-age=31536000; includeSubDomains; preload'
+      );
     });
 
     it('should provide moderate helper', async () => {
-      app.get(
-        '/test',
-        SecurityHelpers.moderate(),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', SecurityHelpers.moderate(), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -268,13 +238,9 @@ describe('Security Middleware', () => {
     });
 
     it('should provide permissive helper', async () => {
-      app.get(
-        '/test',
-        SecurityHelpers.permissive(),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', SecurityHelpers.permissive(), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -282,13 +248,9 @@ describe('Security Middleware', () => {
     });
 
     it('should provide development helper', async () => {
-      app.get(
-        '/test',
-        SecurityHelpers.development(),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', SecurityHelpers.development(), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 

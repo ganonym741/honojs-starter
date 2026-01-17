@@ -4,7 +4,11 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Hono } from 'hono';
-import { validationMiddleware, ValidationHelpers, CommonSchemas } from '../../../src/middleware/validation.middleware.js';
+import {
+  validationMiddleware,
+  ValidationHelpers,
+  CommonSchemas,
+} from '../../../src/middleware/validation.middleware.js';
 import { z } from 'zod';
 
 describe('Validation Middleware', () => {
@@ -21,14 +25,10 @@ describe('Validation Middleware', () => {
         email: z.string().email(),
       });
 
-      app.post(
-        '/test',
-        validationMiddleware({ body: schema }),
-        (c) => {
-          const body = c.get('validatedBody') as any;
-          return c.json({ success: true, data: body });
-        }
-      );
+      app.post('/test', validationMiddleware({ body: schema }), (c) => {
+        const body = c.get('validatedBody') as any;
+        return c.json({ success: true, data: body });
+      });
 
       const validResponse = await app.request('/test', {
         method: 'POST',
@@ -48,13 +48,9 @@ describe('Validation Middleware', () => {
         email: z.string().email(),
       });
 
-      app.post(
-        '/test',
-        validationMiddleware({ body: schema }),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.post('/test', validationMiddleware({ body: schema }), (c) => {
+        return c.json({ success: true });
+      });
 
       const invalidResponse = await app.request('/test', {
         method: 'POST',
@@ -73,14 +69,10 @@ describe('Validation Middleware', () => {
         limit: z.string().transform(Number),
       });
 
-      app.get(
-        '/test',
-        validationMiddleware({ query: schema }),
-        (c) => {
-          const query = c.get('validatedQuery') as any;
-          return c.json({ success: true, data: query });
-        }
-      );
+      app.get('/test', validationMiddleware({ query: schema }), (c) => {
+        const query = c.get('validatedQuery') as any;
+        return c.json({ success: true, data: query });
+      });
 
       const response = await app.request('/test?page=1&limit=10');
 
@@ -95,14 +87,10 @@ describe('Validation Middleware', () => {
         id: z.string().uuid(),
       });
 
-      app.get(
-        '/test/:id',
-        validationMiddleware({ params: schema }),
-        (c) => {
-          const params = c.get('validatedParams') as any;
-          return c.json({ success: true, data: params });
-        }
-      );
+      app.get('/test/:id', validationMiddleware({ params: schema }), (c) => {
+        const params = c.get('validatedParams') as any;
+        return c.json({ success: true, data: params });
+      });
 
       const validId = '550e8400-e29b-41d4-a716-446655440000';
       const response = await app.request(`/test/${validId}`);
@@ -164,14 +152,10 @@ describe('Validation Middleware', () => {
 
   describe('CommonSchemas', () => {
     it('should provide pagination schema', async () => {
-      app.get(
-        '/test',
-        validationMiddleware({ query: CommonSchemas.pagination }),
-        (c) => {
-          const query = c.get('validatedQuery') as any;
-          return c.json({ success: true, data: query });
-        }
-      );
+      app.get('/test', validationMiddleware({ query: CommonSchemas.pagination }), (c) => {
+        const query = c.get('validatedQuery') as any;
+        return c.json({ success: true, data: query });
+      });
 
       const response = await app.request('/test?page=1&limit=10');
 
@@ -182,14 +166,10 @@ describe('Validation Middleware', () => {
     });
 
     it('should provide id schema', async () => {
-      app.get(
-        '/test/:id',
-        validationMiddleware({ params: CommonSchemas.id }),
-        (c) => {
-          const params = c.get('validatedParams') as any;
-          return c.json({ success: true, data: params });
-        }
-      );
+      app.get('/test/:id', validationMiddleware({ params: CommonSchemas.id }), (c) => {
+        const params = c.get('validatedParams') as any;
+        return c.json({ success: true, data: params });
+      });
 
       const response = await app.request('/test/123');
 
@@ -199,14 +179,10 @@ describe('Validation Middleware', () => {
     });
 
     it('should provide search schema', async () => {
-      app.get(
-        '/test',
-        validationMiddleware({ query: CommonSchemas.search }),
-        (c) => {
-          const query = c.get('validatedQuery') as any;
-          return c.json({ success: true, data: query });
-        }
-      );
+      app.get('/test', validationMiddleware({ query: CommonSchemas.search }), (c) => {
+        const query = c.get('validatedQuery') as any;
+        return c.json({ success: true, data: query });
+      });
 
       const response = await app.request('/test?q=test&page=1&limit=10');
 

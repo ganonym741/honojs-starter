@@ -4,7 +4,12 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Hono } from 'hono';
-import { rateLimit, RateLimitPresets, RateLimitKeyGenerators, RateLimitHelpers } from '../../../src/middleware/rate-limit.middleware.js';
+import {
+  rateLimit,
+  RateLimitPresets,
+  RateLimitKeyGenerators,
+  RateLimitHelpers,
+} from '../../../src/middleware/rate-limit.middleware.js';
 
 // Mock RedisService
 const mockRedis = {
@@ -106,13 +111,9 @@ describe('Rate Limit Middleware', () => {
       mockRedis.incr.mockResolvedValue(1);
       mockRedis.expire.mockResolvedValue(undefined);
 
-      app.get(
-        '/test',
-        rateLimit(RateLimitPresets.strict),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', rateLimit(RateLimitPresets.strict), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -124,13 +125,9 @@ describe('Rate Limit Middleware', () => {
       mockRedis.incr.mockResolvedValue(1);
       mockRedis.expire.mockResolvedValue(undefined);
 
-      app.get(
-        '/test',
-        rateLimit(RateLimitPresets.moderate),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', rateLimit(RateLimitPresets.moderate), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -172,13 +169,9 @@ describe('Rate Limit Middleware', () => {
       mockRedis.incr.mockResolvedValue(1);
       mockRedis.expire.mockResolvedValue(undefined);
 
-      app.get(
-        '/test',
-        RateLimitHelpers.public(),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', RateLimitHelpers.public(), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 
@@ -195,13 +188,9 @@ describe('Rate Limit Middleware', () => {
         return next();
       });
 
-      app.get(
-        '/test',
-        RateLimitHelpers.authenticated(),
-        (c) => {
-          return c.json({ success: true });
-        }
-      );
+      app.get('/test', RateLimitHelpers.authenticated(), (c) => {
+        return c.json({ success: true });
+      });
 
       const response = await app.request('/test');
 

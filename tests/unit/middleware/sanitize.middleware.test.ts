@@ -4,7 +4,11 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Hono } from 'hono';
-import { sanitizeMiddleware, SanitizePresets, SanitizeHelpers } from '../../../src/middleware/sanitize.middleware.js';
+import {
+  sanitizeMiddleware,
+  SanitizePresets,
+  SanitizeHelpers,
+} from '../../../src/middleware/sanitize.middleware.js';
 
 describe('Sanitization Middleware', () => {
   let app: Hono;
@@ -15,14 +19,10 @@ describe('Sanitization Middleware', () => {
 
   describe('sanitizeMiddleware', () => {
     it('should sanitize request body', async () => {
-      app.post(
-        '/test',
-        sanitizeMiddleware({ sanitizeBody: true }),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', sanitizeMiddleware({ sanitizeBody: true }), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -40,14 +40,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should sanitize query parameters', async () => {
-      app.get(
-        '/test',
-        sanitizeMiddleware({ sanitizeQuery: true }),
-        (c: any) => {
-          const sanitizedQuery = c.get('sanitizedQuery');
-          return c.json({ success: true, data: sanitizedQuery });
-        }
-      );
+      app.get('/test', sanitizeMiddleware({ sanitizeQuery: true }), (c: any) => {
+        const sanitizedQuery = c.get('sanitizedQuery');
+        return c.json({ success: true, data: sanitizedQuery });
+      });
 
       const response = await app.request('/test?search=<script>alert("xss")</script>test');
 
@@ -57,14 +53,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should sanitize route parameters', async () => {
-      app.get(
-        '/test/:id',
-        sanitizeMiddleware({ sanitizeParams: true }),
-        (c: any) => {
-          const sanitizedParams = c.get('sanitizedParams');
-          return c.json({ success: true, data: sanitizedParams });
-        }
-      );
+      app.get('/test/:id', sanitizeMiddleware({ sanitizeParams: true }), (c: any) => {
+        const sanitizedParams = c.get('sanitizedParams');
+        return c.json({ success: true, data: sanitizedParams });
+      });
 
       const response = await app.request('/test/<script>alert("xss")</script>123');
 
@@ -74,14 +66,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should trim whitespace', async () => {
-      app.post(
-        '/test',
-        sanitizeMiddleware({ trimWhitespace: true }),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', sanitizeMiddleware({ trimWhitespace: true }), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -97,14 +85,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should remove null bytes', async () => {
-      app.post(
-        '/test',
-        sanitizeMiddleware({ removeNullBytes: true }),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', sanitizeMiddleware({ removeNullBytes: true }), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -120,14 +104,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should truncate strings exceeding max length', async () => {
-      app.post(
-        '/test',
-        sanitizeMiddleware({ maxLength: 10 }),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', sanitizeMiddleware({ maxLength: 10 }), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -171,14 +151,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should encode HTML entities', async () => {
-      app.post(
-        '/test',
-        sanitizeMiddleware({ encodeHtml: true }),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', sanitizeMiddleware({ encodeHtml: true }), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -199,14 +175,10 @@ describe('Sanitization Middleware', () => {
 
   describe('SanitizePresets', () => {
     it('should apply strict preset', async () => {
-      app.post(
-        '/test',
-        sanitizeMiddleware(SanitizePresets.strict),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', sanitizeMiddleware(SanitizePresets.strict), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -222,14 +194,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should apply moderate preset', async () => {
-      app.post(
-        '/test',
-        sanitizeMiddleware(SanitizePresets.moderate),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', sanitizeMiddleware(SanitizePresets.moderate), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -243,14 +211,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should apply permissive preset', async () => {
-      app.post(
-        '/test',
-        sanitizeMiddleware(SanitizePresets.permissive),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', sanitizeMiddleware(SanitizePresets.permissive), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -264,14 +228,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should apply rich text preset', async () => {
-      app.post(
-        '/test',
-        sanitizeMiddleware(SanitizePresets.richText),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', sanitizeMiddleware(SanitizePresets.richText), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -291,14 +251,10 @@ describe('Sanitization Middleware', () => {
 
   describe('SanitizeHelpers', () => {
     it('should provide custom helper', async () => {
-      app.post(
-        '/test',
-        SanitizeHelpers.custom({ maxLength: 20 }),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', SanitizeHelpers.custom({ maxLength: 20 }), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -312,14 +268,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should provide strict helper', async () => {
-      app.post(
-        '/test',
-        SanitizeHelpers.strict(),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', SanitizeHelpers.strict(), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -333,14 +285,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should provide moderate helper', async () => {
-      app.post(
-        '/test',
-        SanitizeHelpers.moderate(),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', SanitizeHelpers.moderate(), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -354,14 +302,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should provide permissive helper', async () => {
-      app.post(
-        '/test',
-        SanitizeHelpers.permissive(),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', SanitizeHelpers.permissive(), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
@@ -375,14 +319,10 @@ describe('Sanitization Middleware', () => {
     });
 
     it('should provide rich text helper', async () => {
-      app.post(
-        '/test',
-        SanitizeHelpers.richText(),
-        (c: any) => {
-          const sanitizedBody = c.get('sanitizedBody');
-          return c.json({ success: true, data: sanitizedBody });
-        }
-      );
+      app.post('/test', SanitizeHelpers.richText(), (c: any) => {
+        const sanitizedBody = c.get('sanitizedBody');
+        return c.json({ success: true, data: sanitizedBody });
+      });
 
       const response = await app.request('/test', {
         method: 'POST',
