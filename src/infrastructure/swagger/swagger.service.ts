@@ -20,7 +20,8 @@ export class SwaggerService {
       info: {
         version: '1.0.0',
         title: 'Hono.js Boilerplate API',
-        description: 'Production-ready Hono.js boilerplate with authentication, PostgreSQL, Redis, and payment integration',
+        description:
+          'Production-ready Hono.js boilerplate with authentication, PostgreSQL, Redis, and payment integration',
         contact: {
           name: 'API Support',
           email: 'support@honojs-boilerplate.com',
@@ -112,7 +113,11 @@ export class SwaggerService {
                       email: { type: 'string', format: 'email', example: 'user@example.com' },
                       password: { type: 'string', minLength: 8, example: 'password123' },
                       name: { type: 'string', minLength: 2, example: 'John Doe' },
-                      phone: { type: 'string', pattern: '^\\+?[1-9]\\d{10,15}$', example: '+6281234567890' },
+                      phone: {
+                        type: 'string',
+                        pattern: '^\\+?[1-9]\\d{10,15}$',
+                        example: '+6281234567890',
+                      },
                     },
                   },
                 },
@@ -273,7 +278,10 @@ export class SwaggerService {
                     type: 'object',
                     required: ['refreshToken'],
                     properties: {
-                      refreshToken: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' },
+                      refreshToken: {
+                        type: 'string',
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                      },
                     },
                   },
                 },
@@ -382,8 +390,16 @@ export class SwaggerService {
                     type: 'object',
                     properties: {
                       name: { type: 'string', minLength: 2, example: 'John Doe' },
-                      phone: { type: 'string', pattern: '^\\+?[1-9]\\d{10,15}$', example: '+6281234567890' },
-                      avatar: { type: 'string', format: 'uri', example: 'https://example.com/avatar.jpg' },
+                      phone: {
+                        type: 'string',
+                        pattern: '^\\+?[1-9]\\d{10,15}$',
+                        example: '+6281234567890',
+                      },
+                      avatar: {
+                        type: 'string',
+                        format: 'uri',
+                        example: 'https://example.com/avatar.jpg',
+                      },
                     },
                   },
                 },
@@ -783,7 +799,15 @@ export class SwaggerService {
                     properties: {
                       status: {
                         type: 'string',
-                        enum: ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'],
+                        enum: [
+                          'PENDING',
+                          'CONFIRMED',
+                          'PROCESSING',
+                          'SHIPPED',
+                          'DELIVERED',
+                          'CANCELLED',
+                          'REFUNDED',
+                        ],
                         example: 'CONFIRMED',
                       },
                       notes: { type: 'string', example: 'Updated notes' },
@@ -877,7 +901,13 @@ export class SwaggerService {
                       orderId: { type: 'string', example: 'clxxxxxxxxxxxxx' },
                       paymentMethod: {
                         type: 'string',
-                        enum: ['credit_card', 'bank_transfer', 'ewallet', 'qris', 'virtual_account'],
+                        enum: [
+                          'credit_card',
+                          'bank_transfer',
+                          'ewallet',
+                          'qris',
+                          'virtual_account',
+                        ],
                         example: 'virtual_account',
                       },
                       amount: { type: 'number', example: 200000 },
@@ -891,8 +921,16 @@ export class SwaggerService {
                         },
                       },
                       expiryMinutes: { type: 'integer', example: 60 },
-                      callbackUrl: { type: 'string', format: 'uri', example: 'https://example.com/callback' },
-                      returnUrl: { type: 'string', format: 'uri', example: 'https://example.com/return' },
+                      callbackUrl: {
+                        type: 'string',
+                        format: 'uri',
+                        example: 'https://example.com/callback',
+                      },
+                      returnUrl: {
+                        type: 'string',
+                        format: 'uri',
+                        example: 'https://example.com/return',
+                      },
                     },
                   },
                 },

@@ -9,7 +9,7 @@ export interface CacheOptions {
 
 export class RedisService {
   private redis: Redis;
-  
+
   constructor() {
     this.redis = new Redis(REDIS_CONFIG);
   }
