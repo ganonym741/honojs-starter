@@ -181,7 +181,6 @@ export class AuthService {
     const payload: JWTPayload = {
       userId,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
     };
 
     const accessToken = jwt.sign(payload, JWT_CONFIG.secret, {
@@ -190,13 +189,7 @@ export class AuthService {
       audience: JWT_CONFIG.audience,
     });
 
-    const refreshTokenPayload: JWTPayload = {
-      userId,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60, // 7 days
-    };
-
-    const refreshToken = jwt.sign(refreshTokenPayload, JWT_CONFIG.secret!, {
+    const refreshToken = jwt.sign(payload, JWT_CONFIG.secret!, {
       expiresIn: JWT_CONFIG.refreshTokenExpiry,
       issuer: JWT_CONFIG.issuer,
       audience: JWT_CONFIG.audience,

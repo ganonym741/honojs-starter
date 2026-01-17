@@ -36,6 +36,7 @@ app.route('/api/payments', paymentRoutes);
 
 if (isDevelopment()) {
   const swaggerService = new SwaggerService();
+  app.get('/api/doc', (c) => swaggerService.handleOpenAPISpec(c));
   app.get('/api/docs', swaggerService.handleSwaggerUI);
 }
 

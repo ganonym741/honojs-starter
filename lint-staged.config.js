@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   '**/*.(md|json)': (filenames) => [
     `npx prettier --write ${filenames.join(' ')}`,
   ],
