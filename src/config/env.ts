@@ -45,7 +45,10 @@ export const DOKU_CONFIG = {
 } as const;
 
 export const CORS_CONFIG = {
-  allowedOrigins: getEnvVar<string[]>('ALLOWED_ORIGINS', ['http://localhost:3000','http://localhost:5173']),
+  allowedOrigins: getEnvVar<string[]>('ALLOWED_ORIGINS', [
+    'http://localhost:3000',
+    'http://localhost:5173',
+  ]),
 } as const;
 
 export const RATE_LIMIT_CONFIG = {

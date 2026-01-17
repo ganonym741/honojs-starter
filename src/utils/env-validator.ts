@@ -61,7 +61,7 @@ export function validateEnvVars(configs: EnvVarConfig[]): ValidationResult {
         break;
 
       case 'array':
-        convertedValue = value.split(',').map(item => item.trim());
+        convertedValue = value.split(',').map((item) => item.trim());
         break;
 
       case 'string':
@@ -91,16 +91,13 @@ export function validateEnvVarsOrThrow(configs: EnvVarConfig[]): Record<string, 
   return result.config;
 }
 
-export function getEnvVar<T = string>(
-  name: string,
-  defaultValue?: T
-): T {
+export function getEnvVar<T = string>(name: string, defaultValue?: T): T {
   const value = process.env[name];
 
   if (!value) return defaultValue as T;
 
   if (Array.isArray(defaultValue)) {
-    return value.split(',').map(item => item.trim()) as T;
+    return value.split(',').map((item) => item.trim()) as T;
   }
 
   switch (typeof defaultValue) {
