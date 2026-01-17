@@ -5,8 +5,14 @@ export const createProfileSchema = z.object({
   address: z.string().max(200, 'Address must be less than 200 characters').optional(),
   city: z.string().max(100, 'City must be less than 100 characters').optional(),
   country: z.string().max(100, 'Country must be less than 100 characters').optional(),
-  postalCode: z.string().regex(/^\d{4,10}$/, 'Invalid postal code format').optional(),
-  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)').optional(),
+  postalCode: z
+    .string()
+    .regex(/^\d{4,10}$/, 'Invalid postal code format')
+    .optional(),
+  dateOfBirth: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)')
+    .optional(),
 });
 
 export const updateProfileSchema = z.object({
@@ -14,6 +20,12 @@ export const updateProfileSchema = z.object({
   address: z.string().max(200, 'Address must be less than 200 characters').optional(),
   city: z.string().max(100, 'City must be less than 100 characters').optional(),
   country: z.string().max(100, 'Country must be less than 100 characters').optional(),
-  postalCode: z.string().regex(/^\d{4,10}$/, 'Invalid postal code format').optional(),
-  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)').optional(),
+  postalCode: z
+    .string()
+    .regex(/^\d{4,10}$/, 'Invalid postal code format')
+    .optional(),
+  dateOfBirth: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format (YYYY-MM-DD)')
+    .optional(),
 });

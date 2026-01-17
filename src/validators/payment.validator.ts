@@ -8,16 +8,22 @@ export const createPaymentSchema = z.object({
   }),
   amount: z.number().positive('Amount must be greater than 0'),
   currency: z.string().default('IDR'),
-  customerDetails: z.object({
-    name: z.string().min(1, 'Customer name is required'),
-    email: z.string().email('Invalid email format'),
-    phone: z.string().optional(),
-  }).optional(),
-  itemDetails: z.array(z.object({
-    name: z.string().min(1, 'Item name is required'),
-    price: z.number().positive('Price must be greater than 0'),
-    quantity: z.number().int().positive('Quantity must be greater than 0'),
-  })).optional(),
+  customerDetails: z
+    .object({
+      name: z.string().min(1, 'Customer name is required'),
+      email: z.string().email('Invalid email format'),
+      phone: z.string().optional(),
+    })
+    .optional(),
+  itemDetails: z
+    .array(
+      z.object({
+        name: z.string().min(1, 'Item name is required'),
+        price: z.number().positive('Price must be greater than 0'),
+        quantity: z.number().int().positive('Quantity must be greater than 0'),
+      })
+    )
+    .optional(),
   expiryMinutes: z.number().int().positive().optional(),
   callbackUrl: z.string().url('Invalid callback URL').optional(),
   returnUrl: z.string().url('Invalid return URL').optional(),
@@ -64,8 +70,14 @@ export const getPaymentSchema = z.object({
 });
 
 export const listPaymentsQuerySchema = z.object({
-  page: z.string().optional().transform(val => val ? parseInt(val) : 1),
-  limit: z.string().optional().transform(val => val ? parseInt(val) : 10),
+  page: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val) : 1)),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val) : 10)),
   status: z.nativeEnum(PaymentStatus).optional(),
   paymentMethod: z.string().optional(),
   startDate: z.string().datetime().optional(),
@@ -107,7 +119,6 @@ export const paymentStatisticsQuerySchema = z.object({
   endDate: z.string().datetime().optional(),
   paymentMethod: z.string().optional(),
 });
-
 
 export type CreatePaymentDTO = z.infer<typeof createPaymentSchema>;
 export type UpdatePaymentStatusDTO = z.infer<typeof updatePaymentStatusSchema>;
