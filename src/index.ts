@@ -17,14 +17,14 @@ const app = new Hono();
 validateAllEnvVars();
 
 const middleware = getMiddleware();
-middleware.forEach(mw => app.use('*', mw));
+middleware.forEach((mw) => app.use('*', mw));
 
 app.get('/health', handleHealthCheck);
 app.get('/api/version', (c) => {
   return c.json({
     name: 'Hono.js Boilerplate',
     version: '1.0.0',
-    api: 'v1'
+    api: 'v1',
   });
 });
 
@@ -45,7 +45,7 @@ app.onError(errorMiddleware());
 console.log(`Server starting on port ${ENV.port}`);
 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 
-export default { 
-  port: ENV.port, 
-  fetch: app.fetch, 
+export default {
+  port: ENV.port,
+  fetch: app.fetch,
 };
