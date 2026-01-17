@@ -25,7 +25,6 @@ export function sanitizeMiddleware(config: SanitizeConfig = {}): MiddlewareHandl
     allowedTags = [],
   } = config;
 
-
   const sanitizeString = (value: string): string => {
     let sanitized = value;
 
@@ -153,7 +152,25 @@ export const SanitizePresets = {
     trimWhitespace: true,
     removeNullBytes: true,
     maxLength: 50000, // 50KB max
-    allowedTags: ['p', 'br', 'b', 'i', 'u', 'strong', 'em', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+    allowedTags: [
+      'p',
+      'br',
+      'b',
+      'i',
+      'u',
+      'strong',
+      'em',
+      'a',
+      'ul',
+      'ol',
+      'li',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+    ],
   },
 };
 

@@ -11,9 +11,10 @@ export function errorMiddleware() {
 
     const response = {
       success: false,
-      error: process.env.NODE_ENV === 'production'
-        ? 'Internal server error'
-        : err.message || 'Unknown error',
+      error:
+        process.env.NODE_ENV === 'production'
+          ? 'Internal server error'
+          : err.message || 'Unknown error',
     };
 
     return c.json(response, 500);

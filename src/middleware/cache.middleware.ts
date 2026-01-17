@@ -85,7 +85,6 @@ export const CacheKeyGenerators = {
   },
 };
 
-
 export const CacheTTL = {
   SHORT: 60, // 1 minute
   MEDIUM: 300, // 5 minutes
@@ -93,7 +92,6 @@ export const CacheTTL = {
   VERY_LONG: 3600, // 1 hour
   DAY: 86400, // 1 day
 };
-
 
 export const CachePatterns = {
   USER: (userId: string) => `user:${userId}*`,

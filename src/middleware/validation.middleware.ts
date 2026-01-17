@@ -67,15 +67,12 @@ export function validationMiddleware(config: ValidationConfig): MiddlewareHandle
   };
 }
 
-
 export const ValidationHelpers = {
   body: <T>(schema: z.ZodSchema<T>) => validationMiddleware({ body: schema }),
   query: <T>(schema: z.ZodSchema<T>) => validationMiddleware({ query: schema }),
   params: <T>(schema: z.ZodSchema<T>) => validationMiddleware({ params: schema }),
-  bodyAndQuery: <TBody, TQuery>(
-    bodySchema: z.ZodSchema<TBody>,
-    querySchema: z.ZodSchema<TQuery>
-  ) => validationMiddleware({ body: bodySchema, query: querySchema }),
+  bodyAndQuery: <TBody, TQuery>(bodySchema: z.ZodSchema<TBody>, querySchema: z.ZodSchema<TQuery>) =>
+    validationMiddleware({ body: bodySchema, query: querySchema }),
   all: <TBody, TQuery, TParams>(
     bodySchema: z.ZodSchema<TBody>,
     querySchema: z.ZodSchema<TQuery>,

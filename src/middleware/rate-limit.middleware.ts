@@ -68,7 +68,12 @@ export function rateLimit(config: RateLimitConfig): MiddlewareHandler {
       await next();
 
       const responseStatus = c.res.status;
-      if (skipSuccessfulRequests && responseStatus && responseStatus >= 200 && responseStatus < 300) {
+      if (
+        skipSuccessfulRequests &&
+        responseStatus &&
+        responseStatus >= 200 &&
+        responseStatus < 300
+      ) {
         // Don't count successful requests
         redisService.del(key);
       } else if (skipFailedRequests && responseStatus && responseStatus >= 400) {
@@ -121,7 +126,6 @@ export const RateLimitPresets = {
   },
 };
 
-
 export const RateLimitKeyGenerators = {
   byIP: (c: any) => {
     const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
@@ -150,7 +154,6 @@ export const RateLimitKeyGenerators = {
     return `rate_limit:apikey:${apiKey}`;
   },
 };
-
 
 export const RateLimitHelpers = {
   public: (config?: Partial<RateLimitConfig>) =>

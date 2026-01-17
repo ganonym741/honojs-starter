@@ -8,11 +8,7 @@ import {
   CacheTTL,
   CachePatterns,
 } from './cache.middleware.js';
-import {
-  validationMiddleware,
-  ValidationHelpers,
-  CommonSchemas,
-} from './validation.middleware.js';
+import { validationMiddleware, ValidationHelpers, CommonSchemas } from './validation.middleware.js';
 import {
   rateLimit,
   RateLimitPresets,
@@ -24,18 +20,9 @@ import {
   LoggerPresets,
   LoggerHelpers,
 } from './logger.middleware.js';
-import {
-  securityMiddleware,
-  SecurityPresets,
-  SecurityHelpers,
-} from './security.middleware.js';
-import {
-  sanitizeMiddleware,
-  SanitizePresets,
-  SanitizeHelpers,
-} from './sanitize.middleware.js';
+import { securityMiddleware, SecurityPresets, SecurityHelpers } from './security.middleware.js';
+import { sanitizeMiddleware, SanitizePresets, SanitizeHelpers } from './sanitize.middleware.js';
 import { CORS_CONFIG } from '@/config/env.js';
-
 
 /**
  * CORS middleware
@@ -84,46 +71,19 @@ export function getProductionMiddleware(): MiddlewareHandler[] {
 }
 
 // Re-export cache middleware utilities
-export {
-  cacheMiddleware,
-  invalidateCacheMiddleware,
-  CacheKeyGenerators,
-  CacheTTL,
-  CachePatterns,
-};
+export { cacheMiddleware, invalidateCacheMiddleware, CacheKeyGenerators, CacheTTL, CachePatterns };
 
 // Re-export validation middleware utilities
-export {
-  validationMiddleware,
-  ValidationHelpers,
-  CommonSchemas,
-};
+export { validationMiddleware, ValidationHelpers, CommonSchemas };
 
 // Re-export rate limit middleware utilities
-export {
-  rateLimit,
-  RateLimitPresets,
-  RateLimitKeyGenerators,
-  RateLimitHelpers,
-};
+export { rateLimit, RateLimitPresets, RateLimitKeyGenerators, RateLimitHelpers };
 
 // Re-export logger middleware utilities
-export {
-  customLoggerMiddleware,
-  LoggerPresets,
-  LoggerHelpers,
-};
+export { customLoggerMiddleware, LoggerPresets, LoggerHelpers };
 
 // Re-export security middleware utilities
-export {
-  securityMiddleware,
-  SecurityPresets,
-  SecurityHelpers,
-};
+export { securityMiddleware, SecurityPresets, SecurityHelpers };
 
 // Re-export sanitization middleware utilities
-export {
-  sanitizeMiddleware,
-  SanitizePresets,
-  SanitizeHelpers,
-};
+export { sanitizeMiddleware, SanitizePresets, SanitizeHelpers };
