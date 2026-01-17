@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile
     container_name: honojs-api
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:password@db:5432/honojs_db
@@ -37,14 +37,14 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=honojs_db
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - honojs-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,14 +54,14 @@ services:
     image: redis:7-alpine
     container_name: honojs-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     restart: unless-stopped
     networks:
       - honojs-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 3s
       retries: 5
@@ -74,7 +74,7 @@ services:
       - PGADMIN_DEFAULT_EMAIL=admin@honojs.com
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
-      - "5050:80"
+      - '5050:80'
     depends_on:
       - db
     restart: unless-stopped
@@ -90,7 +90,7 @@ services:
     environment:
       - REDIS_HOSTS=local:redis:6379
     ports:
-      - "8081:8081"
+      - '8081:8081'
     depends_on:
       - redis
     restart: unless-stopped
