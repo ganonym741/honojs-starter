@@ -1,6 +1,6 @@
-import Decimal from "decimal.js";
-import { OrderStatus, PaymentStatus } from "../../../prisma/generated/enums";
-import { User } from "../../../prisma/generated/client";
+import Decimal from 'decimal.js';
+import { OrderStatus, PaymentStatus } from '../../../prisma/generated/enums';
+import { User } from '../../../prisma/generated/client';
 
 export interface CreateOrderDTO {
   items: Array<{

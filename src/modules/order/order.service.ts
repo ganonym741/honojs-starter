@@ -17,7 +17,10 @@ export class OrderService {
 
   async createOrder(userId: string, dto: CreateOrderDTO): Promise<Order> {
     try {
-      const totalAmount = dto.items.reduce((sum, item) => item.price.times(item.quantity).add(sum), Decimal(0));
+      const totalAmount = dto.items.reduce(
+        (sum, item) => item.price.times(item.quantity).add(sum),
+        Decimal(0)
+      );
 
       const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 

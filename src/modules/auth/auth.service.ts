@@ -1,7 +1,13 @@
 import prisma from '../../infrastructure/database/database.service.js';
 import jwt from 'jsonwebtoken';
 import { hashPassword, verifyPassword } from '../../utils/crypto.js';
-import { RegisterDTO, LoginDTO, AuthResponse, RefreshTokenDTO, JWTPayload } from './auth.interface.js';
+import {
+  RegisterDTO,
+  LoginDTO,
+  AuthResponse,
+  RefreshTokenDTO,
+  JWTPayload,
+} from './auth.interface.js';
 import logger from '../../utils/logger.js';
 import { Dependency } from 'hono-simple-di';
 import { JWT_CONFIG } from '@/config/env.js';
@@ -43,7 +49,9 @@ export class AuthService {
         ...tokens,
       };
     } catch (error) {
-      logger.error('Registration failed', { error: error instanceof Error ? error.message : 'Unknown error' });
+      logger.error('Registration failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw error;
     }
   }
@@ -60,7 +68,7 @@ export class AuthService {
           name: true,
           avatar: true,
           phone: true,
-        }
+        },
       });
 
       if (!user) {
@@ -88,7 +96,9 @@ export class AuthService {
         ...tokens,
       };
     } catch (error) {
-      logger.error('Login failed', { error: error instanceof Error ? error.message : 'Unknown error' });
+      logger.error('Login failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw error;
     }
   }
@@ -101,7 +111,9 @@ export class AuthService {
 
       logger.info('User logged out successfully', { userId });
     } catch (error) {
-      logger.error('Logout failed', { error: error instanceof Error ? error.message : 'Unknown error' });
+      logger.error('Logout failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw error;
     }
   }
@@ -140,7 +152,9 @@ export class AuthService {
         ...tokens,
       };
     } catch (error) {
-      logger.error('Token refresh failed', { error: error instanceof Error ? error.message : 'Unknown error' });
+      logger.error('Token refresh failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw error;
     }
   }
@@ -156,7 +170,9 @@ export class AuthService {
 
       logger.info('Email verified successfully', { userId: decoded.userId });
     } catch (error) {
-      logger.error('Email verification failed', { error: error instanceof Error ? error.message : 'Unknown error' });
+      logger.error('Email verification failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       throw error;
     }
   }
@@ -165,7 +181,7 @@ export class AuthService {
     const payload: JWTPayload = {
       userId,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (15 * 60), // 15 minutes
+      exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
     };
 
     const accessToken = jwt.sign(payload, JWT_CONFIG.secret, {
@@ -177,7 +193,7 @@ export class AuthService {
     const refreshTokenPayload: JWTPayload = {
       userId,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60), // 7 days
+      exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60, // 7 days
     };
 
     const refreshToken = jwt.sign(refreshTokenPayload, JWT_CONFIG.secret!, {
@@ -189,7 +205,10 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  private async createSession(userId: string, tokens: { accessToken: string; refreshToken: string }) {
+  private async createSession(
+    userId: string,
+    tokens: { accessToken: string; refreshToken: string }
+  ) {
     await prisma.session.create({
       data: {
         userId,

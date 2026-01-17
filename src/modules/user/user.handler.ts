@@ -4,7 +4,11 @@
  */
 
 import { Context } from 'hono';
-import { updateProfileSchema, updatePasswordSchema, deleteAccountSchema } from '../../validators/user.validator.js';
+import {
+  updateProfileSchema,
+  updatePasswordSchema,
+  deleteAccountSchema,
+} from '../../validators/user.validator.js';
 import { successResponse, errorResponse } from '../../utils/response.js';
 import logger from '../../utils/logger.js';
 import { UserService } from './user.service.js';
@@ -19,10 +23,7 @@ export class UserHandler {
       const userId = c.get('userId') as string;
 
       if (!userId) {
-        return c.json(
-          errorResponse('User not authenticated'),
-          401
-        );
+        return c.json(errorResponse('User not authenticated'), 401);
       }
 
       const profile = await userService.getUserById(userId);
@@ -43,10 +44,7 @@ export class UserHandler {
       const userId = c.get('userId') as string;
 
       if (!userId) {
-        return c.json(
-          errorResponse('User not authenticated'),
-          401
-        );
+        return c.json(errorResponse('User not authenticated'), 401);
       }
 
       const body = await c.req.json();
@@ -54,10 +52,7 @@ export class UserHandler {
       const validationResult = updateProfileSchema.safeParse(body);
 
       if (!validationResult.success) {
-        return c.json(
-          errorResponse('Validation failed', validationResult.error.errors),
-          400
-        );
+        return c.json(errorResponse('Validation failed', validationResult.error.errors), 400);
       }
 
       const profile = await userService.updateProfile(userId, validationResult.data);
@@ -78,10 +73,7 @@ export class UserHandler {
       const userId = c.get('userId') as string;
 
       if (!userId) {
-        return c.json(
-          errorResponse('User not authenticated'),
-          401
-        );
+        return c.json(errorResponse('User not authenticated'), 401);
       }
 
       const body = await c.req.json();
@@ -89,18 +81,12 @@ export class UserHandler {
       const validationResult = updatePasswordSchema.safeParse(body);
 
       if (!validationResult.success) {
-        return c.json(
-          errorResponse('Validation failed', validationResult.error.errors),
-          400
-        );
+        return c.json(errorResponse('Validation failed', validationResult.error.errors), 400);
       }
 
       await userService.updatePassword(userId, validationResult.data);
 
-      return c.json(
-        successResponse({ message: 'Password updated successfully' }),
-        200
-      );
+      return c.json(successResponse({ message: 'Password updated successfully' }), 200);
     } catch (error) {
       logger.error('Update password error:', error);
       return c.json(
@@ -116,10 +102,7 @@ export class UserHandler {
       const userId = c.get('userId') as string;
 
       if (!userId) {
-        return c.json(
-          errorResponse('User not authenticated'),
-          401
-        );
+        return c.json(errorResponse('User not authenticated'), 401);
       }
 
       const body = await c.req.json();
@@ -127,18 +110,12 @@ export class UserHandler {
       const validationResult = deleteAccountSchema.safeParse(body);
 
       if (!validationResult.success) {
-        return c.json(
-          errorResponse('Validation failed', validationResult.error.errors),
-          400
-        );
+        return c.json(errorResponse('Validation failed', validationResult.error.errors), 400);
       }
 
       await userService.deleteAccount(userId, validationResult.data);
 
-      return c.json(
-        successResponse({ message: 'Account deleted successfully' }),
-        200
-      );
+      return c.json(successResponse({ message: 'Account deleted successfully' }), 200);
     } catch (error) {
       logger.error('Delete account error:', error);
       return c.json(
@@ -154,18 +131,12 @@ export class UserHandler {
       const userId = c.get('userId') as string;
 
       if (!userId) {
-        return c.json(
-          errorResponse('User not authenticated'),
-          401
-        );
+        return c.json(errorResponse('User not authenticated'), 401);
       }
 
       await userService.deactivateAccount(userId);
 
-      return c.json(
-        successResponse({ message: 'Account deactivated successfully' }),
-        200
-      );
+      return c.json(successResponse({ message: 'Account deactivated successfully' }), 200);
     } catch (error) {
       logger.error('Deactivate account error:', error);
       return c.json(
@@ -181,18 +152,12 @@ export class UserHandler {
       const userId = c.get('userId') as string;
 
       if (!userId) {
-        return c.json(
-          errorResponse('User not authenticated'),
-          401
-        );
+        return c.json(errorResponse('User not authenticated'), 401);
       }
 
       await userService.activateAccount(userId);
 
-      return c.json(
-        successResponse({ message: 'Account activated successfully' }),
-        200
-      );
+      return c.json(successResponse({ message: 'Account activated successfully' }), 200);
     } catch (error) {
       logger.error('Activate account error:', error);
       return c.json(

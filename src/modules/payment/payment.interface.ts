@@ -1,6 +1,5 @@
-import Decimal from "decimal.js";
-import { PaymentStatus } from "../../../prisma/generated/enums";
-
+import Decimal from 'decimal.js';
+import { PaymentStatus } from '../../../prisma/generated/enums';
 
 export interface PaymentDTO {
   orderId: string;

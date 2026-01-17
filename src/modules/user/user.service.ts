@@ -1,8 +1,5 @@
 import prisma from '../../infrastructure/database/database.service.js';
-import {
-  RedisService,
-  redisServiceDep,
-} from '../../infrastructure/cache/cache.service.js';
+import { RedisService, redisServiceDep } from '../../infrastructure/cache/cache.service.js';
 import { hashPassword, verifyPassword } from '../../utils/crypto.js';
 import {
   UpdateProfileDTO,
@@ -82,7 +79,9 @@ export class UserService {
         throw new Error('Update failed, user not found!');
       }
 
-      await this.redisService.set(`${USER_CACHE_PREFIX}${userId}`, updatedUser, { ttl: USER_CACHE_TTL });
+      await this.redisService.set(`${USER_CACHE_PREFIX}${userId}`, updatedUser, {
+        ttl: USER_CACHE_TTL,
+      });
 
       logger.info('Profile updated successfully', { userId });
       return {
@@ -108,7 +107,7 @@ export class UserService {
       const user = await prisma.user.findUnique({
         select: {
           id: true,
-          password: true
+          password: true,
         },
         where: { id: userId },
       });
@@ -142,7 +141,7 @@ export class UserService {
       const user = await prisma.user.findUnique({
         select: {
           id: true,
-          password: true
+          password: true,
         },
         where: { id: userId },
       });
