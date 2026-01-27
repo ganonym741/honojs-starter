@@ -25,7 +25,7 @@ A production-ready, feature-rich Hono.js boilerplate with modern best practices,
 - Bun 1.0+
 - PostgreSQL 15+
 - Redis 7+
-- npm, yarn, pnpm, or bun
+- npm, yarn, pnpm, or bun(recommend)
 
 ## 🛠️ Installation
 
@@ -33,7 +33,7 @@ A production-ready, feature-rich Hono.js boilerplate with modern best practices,
 
 ```bash
 git clone <repository-url>
-cd honojs-boilerplate
+cd honojs-starter
 ```
 
 ### 2. Install dependencies
@@ -443,13 +443,9 @@ ALLOWED_ORIGINS=https://yourdomain.com
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
+3. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## 📄 License
-
-MIT License - see LICENSE file for details
 
 ## 👥 Authors
 
@@ -461,10 +457,6 @@ MIT License - see LICENSE file for details
 - [Prisma](https://www.prisma.io/) - Database ORM
 - [Redis](https://redis.io/) - Caching
 - [Doku](https://developer.doku.com/) - Payment gateway
-
-## 📞 Support
-
-For support, email support@honojs-boilerplate.com or open an issue on GitHub.
 
 ---
 
